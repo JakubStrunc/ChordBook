@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: chordbook-postgres
+    restart: no
+    
+    # postgres setting (only for local user)
+    environment:
+      POSTGRES_DB: chordbook
+      POSTGRES_USER: random_user
+      POSTGRES_PASSWORD: random_pass
+     
+    # port mapping  
+    ports:
+      - "5432:5432"
+    
+    # save data outside the container
+    volumes:
+      - chordbook-postgres-data:/var/lib/postgresql/data
+    
+    # is database ready?
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U chordbook -d chordbook" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  
+# call volume
+volumes:
+  chordbook-postgres-data:
