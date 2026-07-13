@@ -1,8 +1,7 @@
 ﻿namespace ChordBook.DTO.Songs;
 
-
 /// <summary>
-/// song in the song list
+/// Song displayed in the song list.
 /// </summary>
 public record SongListItemResponse(
     Guid Id,

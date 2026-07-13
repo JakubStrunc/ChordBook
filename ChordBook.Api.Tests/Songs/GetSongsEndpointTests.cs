@@ -33,7 +33,7 @@ public class GetSongsEndpointTests : IClassFixture<CustomWebApplicationFactory>
     }
     
     [Fact]
-    public async Task GetSongs_ReturnsUnauthorized_WhenTokenIsMissing()
+    public async Task GetSongsUnauthorized()
     {
         // Arrange
         var client = _factory.CreateAnonymousClient();
