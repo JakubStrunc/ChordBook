@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Categories\" />
     <Folder Include="Chords\" />
   </ItemGroup>
 
