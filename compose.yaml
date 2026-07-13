@@ -1,30 +1,22 @@
 services:
-  postgres:
-    image: postgres:17-alpine
-    container_name: chordbook-postgres
-    restart: no
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: chordbook-sqlserver
+    restart: "no"
     
     # postgres setting (only for local user)
     environment:
-      POSTGRES_DB: chordbook
-      POSTGRES_USER: random_user
-      POSTGRES_PASSWORD: random_pass
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "ChordBook_dev123!"
      
     # port mapping  
     ports:
-      - "5432:5432"
+      - "1433:1433"
     
     # save data outside the container
     volumes:
-      - chordbook-postgres-data:/var/lib/postgresql/data
-    
-    # is database ready?
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U chordbook -d chordbook" ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - chordbook-sqlserver-data:/var/opt/mssql
   
 # call volume
 volumes:
-  chordbook-postgres-data:
+  chordbook-sqlserver-data:
