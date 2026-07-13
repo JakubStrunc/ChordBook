@@ -30,3 +30,9 @@ jobs:
 
       - name: Run tests
         run: dotnet test ChordBook.sln --configuration Release --no-build
+        
+      - name: Run tests with code coverage
+        run: |
+          dotnet test ChordBook.sln \
+            --configuration Release \
+            --collect:"XPlat Code Coverage"
