@@ -12,7 +12,24 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
+    
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "ChordBook_ci123!"
+        ports:
+          - 1433:1433
+      
+      env:
+        ConnectionStrings__ChordBook: "Server=localhost,1433;Database=ChordBook;User Id=sa;Password=ChordBook_ci123!;TrustServerCertificate=True"
+        Jwt__Key: "ChordBook-test-key-that-is-at-least-32-characters"
+        Jwt__Issuer: "ChordBook"
+        Jwt__Audience: "ChordBookClient"
+        Auth__Username: "test"
+        Auth__Password: "test-password"
+        
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,9 +44,6 @@ jobs:
 
       - name: Build solution
         run: dotnet build ChordBook.sln --configuration Release --no-restore
-
-      - name: Run tests
-        run: dotnet test ChordBook.sln --configuration Release --no-build
         
       - name: Run tests with code coverage
         run: |
