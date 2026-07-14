@@ -26,10 +26,13 @@ public class PutChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
     {
         var client = _factory.CreateAuthenticatedClient();
 
-        var chord = await ChordTestData.CreateChordAsync(client);
+        var chord = await ChordTestData.CreateChordAsync(
+            client,
+            $"Am-{Guid.NewGuid():N}"[..10]
+            );
 
         var request = new UpdateChordRequest(
-            "Am7",
+            $"Am-{Guid.NewGuid():N}"[..10],
             "x02010");
 
         var response = await client.PutAsJsonAsync(

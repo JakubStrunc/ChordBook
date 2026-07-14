@@ -27,7 +27,10 @@ public class GetChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
     {
         var client = _factory.CreateAuthenticatedClient();
         
-        var createdChord = await ChordTestData.CreateChordAsync(client);
+        var createdChord = await ChordTestData.CreateChordAsync(
+            client,
+            $"Am-{Guid.NewGuid():N}"[..10]
+            );
         
         var response = await client.GetAsync($"/api/chords/{createdChord.Id}");
         

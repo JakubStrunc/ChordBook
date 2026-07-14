@@ -26,7 +26,10 @@ public class DeleteChordEndpointTests
     {
         var client = _factory.CreateAuthenticatedClient();
 
-        var chord = await ChordTestData.CreateChordAsync(client);
+        var chord = await ChordTestData.CreateChordAsync(
+            client,
+            $"Am-{Guid.NewGuid():N}"[..10]
+            );
 
         var response = await client.DeleteAsync(
             $"/api/chords/{chord.Id}");

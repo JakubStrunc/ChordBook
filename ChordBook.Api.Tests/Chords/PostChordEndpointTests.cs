@@ -27,13 +27,17 @@ public class PostChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
         var client = _factory.CreateAuthenticatedClient();
         
         var request = new CreateChordRequest(
-            $"Am-{Guid.NewGuid()}",
+            $"Am-{Guid.NewGuid():N}"[..10],
             "x02210"
         );
         
         var response = await client.PostAsJsonAsync("/api/chords", request);
         
-        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var responseBody = await response.Content.ReadAsStringAsync();
+        
+        Assert.True(
+            response.IsSuccessStatusCode,
+            $"Status: {response.StatusCode}, Body: {responseBody}");Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
     
     /// <summary>
