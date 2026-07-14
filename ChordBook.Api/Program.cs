@@ -14,6 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 // add service to container
 builder.Services.AddOpenApi();
 
+// swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 // database
 builder.Services.AddDbContext<ChordBookDbContext>(options =>
     options.UseSqlServer(
@@ -54,10 +58,21 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
+
 builder.Services.AddScoped<SongService>();
+builder.Services.AddScoped<CategoryService>();
+
 builder.Services.AddScoped<SongRepository>();
+builder.Services.AddScoped<CategoryRepository>();
 
 var app = builder.Build();
+
+// swager
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 // available only in development
 if (app.Environment.IsDevelopment())
@@ -71,12 +86,14 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
 // public endpoints
 app.MapHealthEndpoints();
 
 // secure endpoints
 // app.MapAuthEndpoints();
 app.MapSongEndpoints();
+app.MapCategoryEndpoints();
 
 
 
