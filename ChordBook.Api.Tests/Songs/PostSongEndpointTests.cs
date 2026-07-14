@@ -18,7 +18,7 @@ public class PostSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task PostSongOk()
     {
-        var client = _factory.CreateClient();
+        var client = _factory.CreateAuthenticatedClient();
         
         var request = new CreateSongRequest(
             "Wonderwall",
