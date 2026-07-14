@@ -41,9 +41,7 @@ public class GetSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
     {
         var client = _factory.CreateAuthenticatedClient();
         
-        var songId = Guid.NewGuid();
-        
-        var response = await client.GetAsync($"api/songs/{songId}");
+        var response = await client.GetAsync($"api/songs/{Guid.NewGuid()}");
         
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ChordBook.Api.Tests.Infrastructure;
 
+
 public sealed class CustomWebApplicationFactory
     : WebApplicationFactory<Program>
 {
@@ -22,6 +23,13 @@ public sealed class CustomWebApplicationFactory
         Environment.SetEnvironmentVariable(
             "Jwt__Audience",
             "ChordBook.Android");
+        Environment.SetEnvironmentVariable(
+            "Auth__Username",
+            "test-user");
+
+        Environment.SetEnvironmentVariable(
+            "Auth__Password",
+            "test-password");
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
