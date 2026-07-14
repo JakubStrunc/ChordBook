@@ -59,6 +59,7 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<SongService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ChordService>();
@@ -93,7 +94,7 @@ app.UseAuthorization();
 app.MapHealthEndpoints();
 
 // secure endpoints
-// app.MapAuthEndpoints();
+app.MapAuthEndpoints();
 app.MapSongEndpoints();
 app.MapCategoryEndpoints();
 app.MapChordEndpoints();
