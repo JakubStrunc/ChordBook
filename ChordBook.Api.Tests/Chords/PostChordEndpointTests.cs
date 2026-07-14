@@ -27,7 +27,7 @@ public class PostChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
         var client = _factory.CreateAuthenticatedClient();
         
         var request = new CreateChordRequest(
-            "Am",
+            $"Am-{Guid.NewGuid()}",
             "x02210"
         );
         

@@ -47,7 +47,7 @@ public class PostSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
         var client = _factory.CreateAnonymousClient();
         
         var request = new CreateSongRequest(
-            "Wonderwall",
+            $"Wonderwall-{Guid.NewGuid()}",
             "Oasis"
         );
         

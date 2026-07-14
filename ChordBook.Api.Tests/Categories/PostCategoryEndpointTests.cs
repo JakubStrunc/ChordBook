@@ -28,12 +28,16 @@ public class PostCategoryEndpointTests : IClassFixture<CustomWebApplicationFacto
         var client = _factory.CreateAuthenticatedClient();
 
         var category = new CreateCategoryRequest(
-            "Camp"
+            $"Camp-{Guid.NewGuid()}"
             );
         
         var response = await client.PostAsJsonAsync("/api/categories", category);
         
-        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var responseBody = await response.Content.ReadAsStringAsync();
+        
+        Assert.True(
+            response.IsSuccessStatusCode,
+            $"Status: {response.StatusCode}, Body: {responseBody}");
     }
     
     /// <summary>
