@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using ChordBook.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace ChordBook.Api.Tests.Infrastructure;
 
@@ -12,6 +15,22 @@ namespace ChordBook.Api.Tests.Infrastructure;
 public sealed class CustomWebApplicationFactory
     : WebApplicationFactory<Program>
 {
+    /// <summary>
+    /// Creates the test host and applies database migrations.
+    /// </summary>
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        var host = base.CreateHost(builder);
+
+        using var scope = host.Services.CreateScope();
+
+        var dbContext = scope.ServiceProvider
+            .GetRequiredService<ChordBookDbContext>();
+
+        dbContext.Database.Migrate();
+
+        return host;
+    }
     public CustomWebApplicationFactory()
     {
         // JWT configuration used by integration tests
@@ -37,7 +56,7 @@ public sealed class CustomWebApplicationFactory
     }
 
     /// <summary>
-    /// loads the same database settings as the application loads the same database settings as the application
+    /// loads the same database settings as the application
     /// </summary>
     /// <param name="builder"></param>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
