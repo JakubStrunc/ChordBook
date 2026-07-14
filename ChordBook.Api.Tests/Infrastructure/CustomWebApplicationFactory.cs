@@ -6,12 +6,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ChordBook.Api.Tests.Infrastructure;
 
-
+/// <summary>
+/// creates a test host for integration tests, configures test authentication and test environment variables.
+/// </summary>
 public sealed class CustomWebApplicationFactory
     : WebApplicationFactory<Program>
 {
     public CustomWebApplicationFactory()
     {
+        // JWT configuration used by integration tests
         Environment.SetEnvironmentVariable(
             "Jwt__Key",
             "ThisIsATestSecretKeyWithMoreThan32Characters");
@@ -19,7 +22,8 @@ public sealed class CustomWebApplicationFactory
         Environment.SetEnvironmentVariable(
             "Jwt__Issuer",
             "ChordBook.Api");
-
+        
+        // test authentication
         Environment.SetEnvironmentVariable(
             "Jwt__Audience",
             "ChordBook.Android");
@@ -32,6 +36,10 @@ public sealed class CustomWebApplicationFactory
             "test-password");
     }
 
+    /// <summary>
+    /// loads the same database settings as the application loads the same database settings as the application
+    /// </summary>
+    /// <param name="builder"></param>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Development");
@@ -54,7 +62,10 @@ public sealed class CustomWebApplicationFactory
                     _ => { });
         });
     }
-
+    /// <summary>
+    /// creates authenticated HTTP client
+    /// </summary>
+    /// <returns></returns>
     public HttpClient CreateAuthenticatedClient()
     {
         var client = CreateClient();
@@ -65,7 +76,10 @@ public sealed class CustomWebApplicationFactory
 
         return client;
     }
-
+    
+    /// <summary>
+    /// creates an anonymous HTTP client
+    /// </summary>
     public HttpClient CreateAnonymousClient()
     {
         return CreateClient();

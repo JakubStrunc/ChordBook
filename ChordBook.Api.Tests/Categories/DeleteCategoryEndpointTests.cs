@@ -5,6 +5,10 @@ using ChordBook.DTO.Categories;
 
 namespace ChordBook.Api.Tests.Categories;
 
+
+/// <summary>
+/// integration tests for DELETE /api/categories/{id}
+/// </summary>
 public class DeleteCategoryEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -14,6 +18,9 @@ public class DeleteCategoryEndpointTests : IClassFixture<CustomWebApplicationFac
         _factory = factory;
     }
 
+    /// <summary>
+    /// verifies that an existing category can be deleted
+    /// </summary>
     [Fact]
     public async Task DeleteCategoryOk()
     {
@@ -21,12 +28,15 @@ public class DeleteCategoryEndpointTests : IClassFixture<CustomWebApplicationFac
         
         var createdCategory = await CategoryTestData.CreateCategoryAsync(client);
         
-        var responce =  await client.DeleteAsync(
-            $"/api/songs/{createdCategory.Id}");
+        var response =  await client.DeleteAsync(
+            $"/api/categories/{createdCategory.Id}");
         
-        Assert.Equal(HttpStatusCode.NoContent, responce.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
+    /// <summary>
+    /// verifies that deleting a non-existing category returns 404
+    /// </summary>
     [Fact]
     public async Task DeleteCategoryNotFound()
     {
@@ -34,11 +44,14 @@ public class DeleteCategoryEndpointTests : IClassFixture<CustomWebApplicationFac
         
         var songId = Guid.NewGuid();
         
-        var responce = await client.DeleteAsync($"/api/songs/{songId}");
+        var response = await client.DeleteAsync($"/api/categories/{songId}");
         
-        Assert.Equal(HttpStatusCode.NotFound, responce.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
     
+    /// <summary>
+    /// verifies that an anonymous user cannot delete a category
+    /// </summary>
     [Fact]
     public async Task DeleteCategoryUnauthorized()
     {

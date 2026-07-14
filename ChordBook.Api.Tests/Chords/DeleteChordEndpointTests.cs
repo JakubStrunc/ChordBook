@@ -3,6 +3,10 @@ using ChordBook.Api.Tests.Infrastructure;
 
 namespace ChordBook.Api.Tests.Chords;
 
+
+/// <summary>
+/// integration tests for DELETE /api/chords/{id}
+/// </summary>
 public class DeleteChordEndpointTests
     : IClassFixture<CustomWebApplicationFactory>
 {
@@ -13,6 +17,10 @@ public class DeleteChordEndpointTests
         _factory = factory;
     }
 
+    
+    /// <summary>
+    /// verifies that an existing chord can be deleted
+    /// </summary>
     [Fact]
     public async Task DeleteChordOk()
     {
@@ -26,6 +34,9 @@ public class DeleteChordEndpointTests
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
+    /// <summary>
+    /// verifies that deleting a non-existing chord returns 404
+    /// </summary>
     [Fact]
     public async Task DeleteChordNotFound()
     {
@@ -37,6 +48,9 @@ public class DeleteChordEndpointTests
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
+    /// <summary>
+    /// verifies that an anonymous user cannot delete a chord
+    /// </summary>
     [Fact]
     public async Task DeleteChordUnauthorized()
     {

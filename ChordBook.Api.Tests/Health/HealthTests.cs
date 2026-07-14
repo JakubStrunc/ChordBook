@@ -3,6 +3,10 @@ using ChordBook.Api.Tests.Infrastructure;
 
 namespace ChordBook.Api.Tests.Health;
 
+
+/// <summary>
+/// integration tests for health check endpoints
+/// </summary>
 public class HealthTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client;
@@ -12,6 +16,9 @@ public class HealthTests : IClassFixture<CustomWebApplicationFactory>
         _client = factory.CreateClient();
     }
     
+    /// <summary>
+    /// verifies that the application health endpoint is available
+    /// </summary>
     [Fact]
     public async Task GetHealth_ReturnsOk()
     {
@@ -20,6 +27,9 @@ public class HealthTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
     
+    /// <summary>
+    /// verifies that the database health endpoint is available
+    /// </summary>
     [Fact]
     public async Task GetDatabaseHealth_ReturnsOk()
     {

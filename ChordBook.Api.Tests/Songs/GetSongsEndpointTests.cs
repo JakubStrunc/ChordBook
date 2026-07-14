@@ -5,6 +5,9 @@ using ChordBook.DTO.Songs;
 
 namespace ChordBook.Api.Tests.Songs;
 
+/// <summary>
+/// integration tests for GET /api/songs
+/// </summary>
 public class GetSongsEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -14,6 +17,9 @@ public class GetSongsEndpointTests : IClassFixture<CustomWebApplicationFactory>
         _factory = factory;
     }
 
+    /// <summary>
+    /// verifies that all songs are returned
+    /// </summary>
     [Fact]
     public async Task GetSongsOk()
     {
@@ -32,6 +38,9 @@ public class GetSongsEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.NotNull(songs);
     }
     
+    /// <summary>
+    /// verifies that an anonymous user cannot access the endpoint
+    /// </summary>
     [Fact]
     public async Task GetSongsUnauthorized()
     {

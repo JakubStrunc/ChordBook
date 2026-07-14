@@ -5,6 +5,9 @@ using ChordBook.DTO.Chord;
 
 namespace ChordBook.Api.Tests.Chords;
 
+/// <summary>
+/// integration tests for GET /api/chords
+/// </summary>
 public class GetChordsEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     
@@ -15,6 +18,9 @@ public class GetChordsEndpointTests : IClassFixture<CustomWebApplicationFactory>
         _factory = factory;
     }
     
+    /// <summary>
+    /// verifies that all supported chords are returned
+    /// </summary>
     [Fact]
     public async Task GetChordsOk()
     {
@@ -30,6 +36,9 @@ public class GetChordsEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.NotNull(chords);
     }
     
+    /// <summary>
+    /// verifies that an anonymous user cannot access the endpoint
+    /// </summary>
     [Fact]
     public async Task GetChordsUnauthorized()
     {

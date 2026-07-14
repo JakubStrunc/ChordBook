@@ -5,6 +5,11 @@ using ChordBook.DTO.Songs;
 
 namespace ChordBook.Api.Tests.Songs;
 
+
+
+/// <summary>
+/// integration tests for GET /api/songs/{id}
+/// </summary>
 public class GetSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -14,6 +19,10 @@ public class GetSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
         _factory = factory;
     }
 
+    
+    /// <summary>
+    /// verifies that an existing song is returned
+    /// </summary>
     [Fact]
     public async Task GetSongOk()
     {
@@ -23,7 +32,6 @@ public class GetSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
 
         var response = await client.GetAsync($"api/songs/{createdSong.Id}");
         
-        // verify that endpoint returned 200
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var song = await response.Content
@@ -36,6 +44,10 @@ public class GetSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
         
     }
 
+    
+    /// <summary>
+    /// verifies that requesting a non-existing song returns 404
+    /// </summary>
     [Fact]
     public async Task GetSongNotFound()
     {
@@ -46,14 +58,15 @@ public class GetSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
     
+    /// <summary>
+    /// verifies that an anonymous user cannot access the endpoint
+    /// </summary>
     [Fact]
     public async Task GetSongUnauthorized()
     {
         var client = _factory.CreateAnonymousClient();
         
-        // call the endpoint
-        var songId = Guid.Parse("1");
-        var response = await client.GetAsync($"api/songs/{songId}");
+        var response = await client.GetAsync($"api/songs/{Guid.NewGuid()}");
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }

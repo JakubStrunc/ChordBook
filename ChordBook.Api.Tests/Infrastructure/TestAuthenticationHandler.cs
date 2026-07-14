@@ -6,11 +6,19 @@ using Microsoft.Extensions.Options;
 
 namespace ChordBook.Api.Tests.Infrastructure;
 
+
+/// <summary>
+/// authentication handler
+/// </summary>
 public sealed class TestAuthenticationHandler
     : AuthenticationHandler<AuthenticationSchemeOptions>
 {
     public const string SchemeName = "Test";
-
+    
+    
+    /// <summary>
+    /// authentication scheme used by test clients
+    /// </summary>
     public TestAuthenticationHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
@@ -19,15 +27,21 @@ public sealed class TestAuthenticationHandler
     {
     }
 
+    /// <summary>
+    /// authenticates requests
+    /// </summary>
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        
         var authorizationHeader = Request.Headers.Authorization.ToString();
 
+        // if no authorization header then anonymous request
         if (string.IsNullOrWhiteSpace(authorizationHeader))
         {
             return Task.FromResult(AuthenticateResult.NoResult());
         }
-
+        
+        // different authentication scheme then reject requests
         if (!authorizationHeader.StartsWith(
                 SchemeName,
                 StringComparison.OrdinalIgnoreCase))
@@ -35,7 +49,8 @@ public sealed class TestAuthenticationHandler
             return Task.FromResult(
                 AuthenticateResult.Fail("Invalid authentication scheme."));
         }
-
+        
+        // create a test identity
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, "test-user-id"),

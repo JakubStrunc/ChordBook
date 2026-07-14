@@ -2,10 +2,13 @@
 using System.Net.Http.Json;
 using ChordBook.Api.Tests.Infrastructure;
 using ChordBook.DTO.Songs;
-using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace ChordBook.Api.Tests.Songs;
 
+
+/// <summary>
+/// integration tests for PUT /api/songs/{id}
+/// </summary>
 public class PutSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -15,6 +18,10 @@ public class PutSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
         _factory = factory;
     }
 
+    
+    /// <summary>
+    /// verifies that an existing song can be updated
+    /// </summary>
     [Fact]
     public async Task PutSongOk()
     {
@@ -42,6 +49,9 @@ public class PutSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(request.Artist, song.Artist);
     }
     
+    /// <summary>
+    /// verifies that updating a non-existing song returns 404
+    /// </summary>
     [Fact]
     public async Task PutSongNotFound()
     {
@@ -60,7 +70,9 @@ public class PutSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         
     }
-    
+    /// <summary>
+    /// verifies that an anonymous user cannot update a song
+    /// </summary>
     [Fact]
     public async Task PutSongUnauthorized()
     {

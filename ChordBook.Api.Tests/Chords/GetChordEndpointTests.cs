@@ -5,6 +5,10 @@ using ChordBook.DTO.Chord;
 
 namespace ChordBook.Api.Tests.Chords;
 
+
+/// <summary>
+/// integration tests for GET /api/chords/{id}
+/// </summary>
 public class GetChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -14,6 +18,10 @@ public class GetChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
         _factory = factory;
     }
 
+    
+    /// <summary>
+    /// verifies that an existing chord is returned
+    /// </summary>
     [Fact]
     public async Task GetChordOk()
     {
@@ -34,6 +42,9 @@ public class GetChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.NotNull(chord.Fingering);
     }
     
+    /// <summary>
+    /// verifies that requesting a non-existing chord returns 404
+    /// </summary>
     [Fact]
     public async Task GetChordNotFound()
     {
@@ -44,6 +55,9 @@ public class GetChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
     
+    /// <summary>
+    /// verifies that an anonymous user cannot access the endpoint
+    /// </summary>
     [Fact]
     public async Task GetChordUnauthenticated()
     {

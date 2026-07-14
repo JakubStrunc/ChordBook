@@ -5,6 +5,10 @@ using ChordBook.DTO.Chord;
 
 namespace ChordBook.Api.Tests.Chords;
 
+
+/// <summary>
+/// integration tests for POST /api/chords
+/// </summary>
 public class PostChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -14,6 +18,9 @@ public class PostChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
         _factory = factory;
     }
     
+    /// <summary>
+    /// verifies that a new chord can be created
+    /// </summary>
     [Fact]
     public async Task PostChordOk()
     {
@@ -29,8 +36,11 @@ public class PostChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
     
+    /// <summary>
+    /// verifies that creating a chord with an empty name returns 400
+    /// </summary>
     [Fact]
-    public async Task PostChordBadRequestNameIsEmpty()
+    public async Task PostChordBadRequestWhenNameIsEmpty()
     {
         var client = _factory.CreateAuthenticatedClient();
 
@@ -44,8 +54,11 @@ public class PostChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
     
+    /// <summary>
+    /// verifies that creating a chord with an empty fingering returns 400
+    /// </summary>
     [Fact]
-    public async Task PostChordBadRequestFingeringIsEmpty()
+    public async Task PostChordBadRequestWhenFingeringIsEmpty()
     {
         var client = _factory.CreateAuthenticatedClient();
 
@@ -59,6 +72,9 @@ public class PostChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
     
+    /// <summary>
+    /// verifies that an anonymous user cannot create a chord
+    /// </summary>
     [Fact]
     public async Task PostChordUnauthorized()
     {

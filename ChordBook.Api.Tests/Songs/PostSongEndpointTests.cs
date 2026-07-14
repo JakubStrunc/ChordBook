@@ -5,6 +5,10 @@ using ChordBook.DTO.Songs;
 
 namespace ChordBook.Api.Tests.Songs;
 
+
+/// <summary>
+/// integration tests for POST /api/songs
+/// </summary>
 public class PostSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     
@@ -14,7 +18,10 @@ public class PostSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
     {
         _factory = factory;
     }
-
+    
+    /// <summary>
+    /// verifies that a new song can be created
+    /// </summary>
     [Fact]
     public async Task PostSongOk()
     {
@@ -31,10 +38,13 @@ public class PostSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
     }
     
     
+    /// <summary>
+    /// verifies that an anonymous user cannot create a song
+    /// </summary>
     [Fact]
     public async Task PostSongUnauthorized()
     {
-        var client = _factory.CreateAuthenticatedClient();
+        var client = _factory.CreateAnonymousClient();
         
         var request = new CreateSongRequest(
             "Wonderwall",

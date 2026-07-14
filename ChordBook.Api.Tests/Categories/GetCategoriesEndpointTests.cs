@@ -4,6 +4,10 @@ using ChordBook.Api.Tests.Infrastructure;
 
 namespace ChordBook.Api.Tests.Categories;
 
+
+/// <summary>
+/// integration tests for GET /api/categories
+/// </summary>
 public class GetCategoriesEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -13,6 +17,10 @@ public class GetCategoriesEndpointTests : IClassFixture<CustomWebApplicationFact
         _factory = factory;
     }
 
+    
+    /// <summary>
+    /// verifies that all categories are returned
+    /// </summary>
     [Fact]
     public async Task GetCategoriesOk()
     {
@@ -27,6 +35,9 @@ public class GetCategoriesEndpointTests : IClassFixture<CustomWebApplicationFact
         Assert.NotNull(categories);
     }
     
+    /// <summary>
+    /// verifies that an anonymous user cannot access the endpoint
+    /// </summary>
     [Fact]
     public async Task GetCategoriesUnauthorized()
     {

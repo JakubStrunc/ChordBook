@@ -5,6 +5,10 @@ using ChordBook.DTO.Categories;
 
 namespace ChordBook.Api.Tests.Categories;
 
+
+/// <summary>
+/// integration tests for POST /api/categories
+/// </summary>
 public class PostCategoryEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -14,6 +18,10 @@ public class PostCategoryEndpointTests : IClassFixture<CustomWebApplicationFacto
         _factory = factory;
     }
 
+    
+    /// <summary>
+    /// verifies that a new category can be created
+    /// </summary>
     [Fact]
     public async Task PostCategoryOk()
     {
@@ -28,6 +36,9 @@ public class PostCategoryEndpointTests : IClassFixture<CustomWebApplicationFacto
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
     
+    /// <summary>
+    /// verifies that an anonymous user cannot create a category
+    /// </summary>
     [Fact]
     public async Task PostCategoryUnauthorized()
     {

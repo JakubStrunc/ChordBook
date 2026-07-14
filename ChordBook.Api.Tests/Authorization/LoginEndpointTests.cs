@@ -5,6 +5,10 @@ using ChordBook.DTO.Auth;
 
 namespace ChordBook.Api.Tests.Authorization;
 
+
+/// <summary>
+/// integration tests for POST /api/auth/login
+/// </summary>
 public class LoginEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -14,6 +18,10 @@ public class LoginEndpointTests : IClassFixture<CustomWebApplicationFactory>
         _factory = factory;
     }
     
+    
+    /// <summary>
+    /// verifies that a valid user can log in and receives JWT
+    /// </summary>
     [Fact]
     public async Task LoginOk()
     {
@@ -36,8 +44,11 @@ public class LoginEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.False(string.IsNullOrWhiteSpace(result.AccessToken));
     }
     
+    /// <summary>
+    /// verifies that invalid credentials return 401 Unauthorized
+    /// </summary>
     [Fact]
-    public async Task LoginUnauthorized_WhenCredentialsAreInvalid()
+    public async Task LoginUnauthorizedCredentialsAreInvalid()
     {
         var client = _factory.CreateAnonymousClient();
 

@@ -5,16 +5,22 @@ namespace ChordBook.Api.Tests.Infrastructure;
 
 public static class CategoryTestData
 {
+    
+    /// <summary>
+    /// helper methods for creating test category
+    /// </summary>
     public static async Task<CategoryResponse> CreateCategoryAsync(
         HttpClient client,
         string name = "Test category")
     {
+        // creating category
         var request = new CreateCategoryRequest(name);
 
         var response = await client.PostAsJsonAsync(
             "/api/categories",
             request);
-
+        
+        // verify that category created successfully
         response.EnsureSuccessStatusCode();
 
         var category = await response.Content

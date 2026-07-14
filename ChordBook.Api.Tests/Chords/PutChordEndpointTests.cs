@@ -5,6 +5,10 @@ using ChordBook.DTO.Chord;
 
 namespace ChordBook.Api.Tests.Chords;
 
+
+/// <summary>
+/// integration tests for PUT /api/chords/{id}
+/// </summary>
 public class PutChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -14,6 +18,9 @@ public class PutChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
         _factory = factory;
     }
 
+    /// <summary>
+    /// verifies that an existing chord can be updated
+    /// </summary>
     [Fact]
     public async Task PutChordOk()
     {
@@ -40,6 +47,9 @@ public class PutChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(request.Fingering, updatedChord.Fingering);
     }
 
+    /// <summary>
+    /// verifies that updating a non-existing chord returns 404
+    /// </summary>
     [Fact]
     public async Task PutChordNotFound()
     {
@@ -56,6 +66,9 @@ public class PutChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
+    /// <summary>
+    /// verifies that an anonymous user cannot update a chord
+    /// </summary>
     [Fact]
     public async Task PutChordUnauthorized()
     {

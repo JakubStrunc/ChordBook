@@ -3,6 +3,10 @@ using ChordBook.Api.Tests.Infrastructure;
 
 namespace ChordBook.Api.Tests.Songs;
 
+
+/// <summary>
+/// integration tests for DELETE /api/songs/{id}
+/// </summary>
 public class DeleteSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -12,6 +16,9 @@ public class DeleteSongEndpointTests : IClassFixture<CustomWebApplicationFactory
         _factory = factory;
     }
     
+    /// <summary>
+    /// verifies that an existing song can be deleted
+    /// </summary>
     [Fact]
     public async Task DeleteSongOk()
     {
@@ -25,6 +32,9 @@ public class DeleteSongEndpointTests : IClassFixture<CustomWebApplicationFactory
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
     
+    /// <summary>
+    /// verifies that deleting non-existing song returns 404
+    /// </summary>
     [Fact]
     public async Task DeleteSongNotFound()
     {
@@ -38,6 +48,9 @@ public class DeleteSongEndpointTests : IClassFixture<CustomWebApplicationFactory
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
     
+    /// <summary>
+    /// verifies that an anonymous user cannot delete a song
+    /// </summary>
     [Fact]
     public async Task DeleteSongUnauthorized()
     {
