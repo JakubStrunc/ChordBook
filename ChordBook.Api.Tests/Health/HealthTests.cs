@@ -7,6 +7,7 @@ namespace ChordBook.Api.Tests.Health;
 /// <summary>
 /// integration tests for health check endpoints
 /// </summary>
+[Collection("IntegrationTests")]
 public class HealthTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client;

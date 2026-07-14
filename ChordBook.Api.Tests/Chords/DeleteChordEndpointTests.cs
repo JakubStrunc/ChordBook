@@ -7,6 +7,7 @@ namespace ChordBook.Api.Tests.Chords;
 /// <summary>
 /// integration tests for DELETE /api/chords/{id}
 /// </summary>
+[Collection("IntegrationTests")]
 public class DeleteChordEndpointTests
     : IClassFixture<CustomWebApplicationFactory>
 {

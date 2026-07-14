@@ -9,6 +9,7 @@ namespace ChordBook.Api.Tests.Chords;
 /// <summary>
 /// integration tests for GET /api/chords/{id}
 /// </summary>
+[Collection("IntegrationTests")]
 public class GetChordEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;

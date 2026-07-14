@@ -9,6 +9,7 @@ namespace ChordBook.Api.Tests.Categories;
 /// <summary>
 /// integration tests for GET /api/categories
 /// </summary>
+[Collection("IntegrationTests")]
 public class GetCategoriesEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;

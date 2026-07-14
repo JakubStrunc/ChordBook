@@ -7,6 +7,7 @@ namespace ChordBook.Api.Tests.Songs;
 /// <summary>
 /// integration tests for DELETE /api/songs/{id}
 /// </summary>
+[Collection("IntegrationTests")]
 public class DeleteSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;

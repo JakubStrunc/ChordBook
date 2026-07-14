@@ -9,6 +9,7 @@ namespace ChordBook.Api.Tests.Categories;
 /// <summary>
 /// integration tests for DELETE /api/categories/{id}
 /// </summary>
+[Collection("IntegrationTests")]
 public class DeleteCategoryEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;

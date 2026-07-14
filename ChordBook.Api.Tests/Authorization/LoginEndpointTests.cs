@@ -9,6 +9,7 @@ namespace ChordBook.Api.Tests.Authorization;
 /// <summary>
 /// integration tests for POST /api/auth/login
 /// </summary>
+[Collection("IntegrationTests")]
 public class LoginEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;

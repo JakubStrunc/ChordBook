@@ -9,6 +9,7 @@ namespace ChordBook.Api.Tests.Categories;
 /// <summary>
 /// integration tests for POST /api/categories
 /// </summary>
+[Collection("IntegrationTests")]
 public class PostCategoryEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;

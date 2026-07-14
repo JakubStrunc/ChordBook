@@ -8,6 +8,7 @@ namespace ChordBook.Api.Tests.Songs;
 /// <summary>
 /// integration tests for GET /api/songs
 /// </summary>
+[Collection("IntegrationTests")]
 public class GetSongsEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;

@@ -9,6 +9,7 @@ namespace ChordBook.Api.Tests.Songs;
 /// <summary>
 /// integration tests for PUT /api/songs/{id}
 /// </summary>
+[Collection("IntegrationTests")]
 public class PutSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
