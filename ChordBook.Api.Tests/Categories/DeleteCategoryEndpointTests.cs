@@ -26,7 +26,7 @@ public class DeleteCategoryEndpointTests : IClassFixture<CustomWebApplicationFac
     {
         var client = _factory.CreateAuthenticatedClient();
         
-        var createdCategory = await CategoryTestData.CreateCategoryAsync(client);
+        var createdCategory = await CategoryTestData.CreateCategoryAsync(client, $"test-category-{Guid.NewGuid()}");
         
         var response =  await client.DeleteAsync(
             $"/api/categories/{createdCategory.Id}");

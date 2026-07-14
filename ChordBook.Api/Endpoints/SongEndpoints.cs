@@ -1,6 +1,5 @@
 ﻿using ChordBook.DTO.Songs;
 using ChordBook.Services;
-using Superpower.Model;
 
 namespace ChordBook.Endpoints;
 

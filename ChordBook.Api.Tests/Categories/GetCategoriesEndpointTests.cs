@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using ChordBook.Api.Tests.Infrastructure;
+using ChordBook.DTO.Categories;
 
 namespace ChordBook.Api.Tests.Categories;
 
@@ -30,7 +31,7 @@ public class GetCategoriesEndpointTests : IClassFixture<CustomWebApplicationFact
         
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         
-        var categories = await response.Content.ReadFromJsonAsync<List<string>>();
+        var categories = await response.Content.ReadFromJsonAsync<List<CategoryResponse>>();
         
         Assert.NotNull(categories);
     }
