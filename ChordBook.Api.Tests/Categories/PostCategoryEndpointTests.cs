@@ -33,11 +33,7 @@ public class PostCategoryEndpointTests : IClassFixture<CustomWebApplicationFacto
         
         var response = await client.PostAsJsonAsync("/api/categories", category);
         
-        var responseBody = await response.Content.ReadAsStringAsync();
-        
-        Assert.True(
-            response.IsSuccessStatusCode,
-            $"Status: {response.StatusCode}, Body: {responseBody}");
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
     
     /// <summary>
