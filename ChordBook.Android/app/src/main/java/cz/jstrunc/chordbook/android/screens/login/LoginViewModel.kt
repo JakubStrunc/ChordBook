@@ -1,5 +1,6 @@
 package cz.jstrunc.chordbook.android.screens.login
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -37,7 +38,9 @@ class LoginViewModel : ViewModel() {
         errorMessage = null
     }
 
-    fun login() {
+    fun login(
+        onSuccess: () -> Unit
+    ) {
 
         if (username.isBlank() || password.isBlank()) {
             errorMessage = "Vyplň uživatelské jméno a heslo."
@@ -55,9 +58,19 @@ class LoginViewModel : ViewModel() {
                         password
                     )
                 )
+                val receivedToken = response.accessToken
 
-                token = response.token
+                if (receivedToken.isBlank()) {
+                    errorMessage = "Server nevrátil přihlašovací token."
+                    return@launch
+                }
+
+                ApiClient.saveToken(receivedToken)
+                token = receivedToken
+
+                onSuccess()
             } catch (exception: Exception) {
+                Log.e("LOGIN", "Login failed", exception)
                 errorMessage = "Přihlášení se nezdařilo."
             } finally {
                 isLoading = false

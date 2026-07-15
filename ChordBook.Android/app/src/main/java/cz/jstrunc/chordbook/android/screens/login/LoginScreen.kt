@@ -32,7 +32,8 @@ import cz.jstrunc.chordbook.android.ui.theme.ChordBookColors
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    loginViewModel: LoginViewModel = viewModel()
+    loginViewModel: LoginViewModel = viewModel(),
+    onLoginSuccess: () -> Unit
 )
 {
 
@@ -92,9 +93,12 @@ fun LoginScreen(
 
         )
         Button(
-            onClick = loginViewModel::login,
+            onClick = {
+                loginViewModel.login(
+                    onSuccess = onLoginSuccess
+                )
+            },
             enabled = !loginViewModel.isLoading,
-
             modifier = Modifier
                 .padding(top = 32.dp)
                 .fillMaxWidth(0.8f),
@@ -102,12 +106,13 @@ fun LoginScreen(
                 containerColor = ChordBookColors.Primary,
                 contentColor = Color.White
             )
-        )
-        {
-            Text(text = if (loginViewModel.isLoading)
-                "Přihlašuji..."
-            else
-                "Přihlásit se"
+        ) {
+            Text(
+                text = if (loginViewModel.isLoading) {
+                    "Přihlašuji..."
+                } else {
+                    "Přihlásit se"
+                }
             )
         }
 
@@ -137,6 +142,8 @@ fun LoginScreen(
 @Composable
 fun LoginScreenPreview() {
     ChordBookAndroidTheme {
-        LoginScreen()
+        LoginScreen(
+            onLoginSuccess = {}
+        )
     }
 }
