@@ -12,6 +12,7 @@ public record ChordPositionResponse(
 );
 
 public record ChordResponse(
+    Guid Id,
     string Name,
     string? Fingering
 );

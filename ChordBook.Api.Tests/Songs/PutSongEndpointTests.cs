@@ -33,7 +33,8 @@ public class PutSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
         
         var request = new UpdateSongRequest(
             "Updated title",
-            "Updated artist");
+            "Updated artist",
+            []);
         
         var response = await client.PutAsJsonAsync(
             $"/api/songs/{createdSong.Id}",
@@ -62,7 +63,8 @@ public class PutSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
         
         var request = new UpdateSongRequest(
             "Updated title",
-            "Updated artist");
+            "Updated artist",
+            []);
         
         var response = await client.PutAsJsonAsync(
             $"/api/songs/{songId}",
@@ -83,7 +85,8 @@ public class PutSongEndpointTests : IClassFixture<CustomWebApplicationFactory>
         
         var request = new UpdateSongRequest(
             "Updated title",
-            "Updated artist");
+            "Updated artist",
+            []);
         
         var response = await client.PutAsJsonAsync(
             $"/api/songs/{songId}",

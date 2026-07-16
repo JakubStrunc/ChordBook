@@ -1,6 +1,8 @@
-﻿using ChordBook.Repositories;
+﻿using ChordBook.DTO.Categories;
+using ChordBook.Repositories;
 using ChordBook.DTO.Songs;
 using ChordBook.Entities;
+using ChordBook.Services.Results;
 
 namespace ChordBook.Services;
 
@@ -12,12 +14,19 @@ public class SongService(SongRepository songRepository)
 {
     
     /// <summary>
-    /// returns all songs ordered by title
+    /// returns all songs by search text and categories ordered by title
     /// </summary>
     public async Task<List<SongListItemResponse>> GetSongsAsync(
+        string? search,
+        IReadOnlyCollection<Guid> categoryIds,
         CancellationToken ct)
     {
-        var songs = await songRepository.GetAllSongs(ct);
+
+        var songs = await songRepository.GetSongs(
+            search,
+            categoryIds,
+            ct
+        );
 
         return songs
             .Select(song => new SongListItemResponse(
@@ -59,6 +68,7 @@ public class SongService(SongRepository songRepository)
                                             chordPosition.CharacterIndex,
                                             new ChordResponse
                                             (
+                                                chordPosition.Chord.Id,
                                                 chordPosition.Chord.Name,
                                                 chordPosition.Chord.Fingering
                                             )
@@ -94,32 +104,86 @@ public class SongService(SongRepository songRepository)
     }
 
     /// <summary>
-    /// updates an existing song
+    /// updates an existing song including lyrics and chord positions
     /// </summary>
     public async Task<SongDetailResponse?> UpdateSongAsync(
         Guid songId,
-        UpdateSongRequest updateSongRequest,
+        UpdateSongRequest request,
         CancellationToken ct)
     {
-        var song = await songRepository.GetTrackedSongById(songId, ct);
-        
-        if (song == null) return null;
-        
-        song.Title = updateSongRequest.Title;
-        song.Artist = updateSongRequest.Artist;
-        song.UpdatedAt = DateTime.UtcNow;
-        
-        await songRepository.UpdateSong(song, ct);
-        
-        return new SongDetailResponse(
-            song.Id,
-            song.Title,
-            song.Artist,
-            [],
-            []
-        );
-    }
+        var song = await songRepository.GetTrackedSongById(
+            songId,
+            ct);
 
+        if (song is null)
+        {
+            return null;
+        }
+
+        var chordIds = request.Lines
+            .SelectMany(line => line.Chords)
+            .Select(chord => chord.ChordId)
+            .Distinct()
+            .ToList();
+
+        var allChordsExist = await songRepository.AllChordsExist(
+            chordIds,
+            ct);
+
+        if (!allChordsExist)
+        {
+            throw new ArgumentException(
+                "One or more selected chords do not exist");
+        }
+
+        song.Title = request.Title.Trim();
+
+        song.Artist = string.IsNullOrWhiteSpace(request.Artist)
+            ? null
+            : request.Artist.Trim();
+
+        song.UpdatedAt = DateTime.UtcNow;
+
+        var newLines = request.Lines
+            .OrderBy(line => line.LineNumber)
+            .Select(lineRequest =>
+            {
+                var songLine = new SongLine
+                {
+                    SongId = song.Id,
+                    LineNumber = lineRequest.LineNumber,
+                    Text = lineRequest.Text
+                };
+
+                foreach (var chordRequest in lineRequest.Chords
+                             .OrderBy(chord => chord.CharacterIndex))
+                {
+                    songLine.ChordPositions.Add(
+                        new ChordPosition
+                        {
+                            CharacterIndex =
+                                chordRequest.CharacterIndex,
+                            ChordId =
+                                chordRequest.ChordId
+                        });
+                }
+
+                return songLine;
+            })
+            .ToList();
+
+        await songRepository.ReplaceSongLines(
+            song.Id,
+            newLines,
+            ct);
+
+        await songRepository.SaveSong(ct);
+
+        return await GetSongAsync(
+            songId,
+            ct);
+    }
+    
     /// <summary>
     /// deletes a song
     /// </summary>
@@ -136,5 +200,91 @@ public class SongService(SongRepository songRepository)
         await songRepository.DeleteSong(song, ct);
         
         return true;
+    }
+    
+    /// <summary>
+    /// returns categories assigned to a song
+    /// </summary>
+    public async Task<GetSongCategoriesResult> GetSongCategoriesAsync(
+        Guid songId,
+        CancellationToken ct)
+    {
+        var songExists = await songRepository.SongExistsAsync(
+            songId,
+            ct);
+
+        if (!songExists)
+        {
+            return new GetSongCategoriesResult(
+                false,
+                []);
+        }
+
+        var categories = await songRepository.GetSongCategoriesAsync(
+            songId,
+            ct);
+
+        return new GetSongCategoriesResult(
+            true,
+            categories);
+    }
+
+    /// <summary>
+    /// assigns an existing category to a song
+    /// </summary>
+    public async Task<AddSongCategoryResult> AddCategoryToSongAsync(
+        Guid songId,
+        Guid categoryId,
+        CancellationToken ct)
+    {
+        var songExists = await songRepository.SongExistsAsync(
+            songId,
+            ct);
+
+        if (!songExists)
+        {
+            return AddSongCategoryResult.SongNotFound;
+        }
+
+        var categoryExists = await songRepository.CategoryExistsAsync(
+            categoryId,
+            ct);
+
+        if (!categoryExists)
+        {
+            return AddSongCategoryResult.CategoryNotFound;
+        }
+
+        var alreadyAssigned =
+            await songRepository.SongCategoryExistsAsync(
+                songId,
+                categoryId,
+                ct);
+
+        if (alreadyAssigned)
+        {
+            return AddSongCategoryResult.AlreadyAssigned;
+        }
+
+        await songRepository.AddCategoryToSongAsync(
+            songId,
+            categoryId,
+            ct);
+
+        return AddSongCategoryResult.Added;
+    }
+
+    /// <summary>
+    /// removes a category assignment from a song
+    /// </summary>
+    public async Task<bool> RemoveCategoryFromSongAsync(
+        Guid songId,
+        Guid categoryId,
+        CancellationToken ct)
+    {
+        return await songRepository.RemoveCategoryFromSongAsync(
+            songId,
+            categoryId,
+            ct);
     }
 }
