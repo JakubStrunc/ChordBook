@@ -1,6 +1,5 @@
 package cz.jstrunc.chordbook.android.screens.createsong
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,25 +20,33 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cz.jstrunc.chordbook.android.screens.common.ConnectionErrorScreen
 import cz.jstrunc.chordbook.android.ui.theme.ChordBookColors
 
+/**
+ * displays the form for creating a new song.
+ */
 @Composable
 fun CreateSongScreen(
     onBackClick: () -> Unit,
     onSongCreated: (String) -> Unit,
     createSongViewModel: CreateSongViewModel = viewModel()
 ) {
-
+    if (createSongViewModel.connectionErrorMessage != null) {
+        ConnectionErrorScreen(
+            message = createSongViewModel.connectionErrorMessage!!,
+            onRetry = {
+                createSongViewModel.createSong(onSongCreated)
+            }
+        )
+        return
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -125,10 +132,9 @@ fun CreateSongScreen(
             modifier = Modifier.weight(1f)
         )
 
-        if (createSongViewModel.errorMessage != null) {
+        createSongViewModel.errorMessage?.let { message ->
             Text(
-                text = createSongViewModel.errorMessage
-                    ?: "Písničku se nepodařilo vytvořit.",
+                text = message,
                 color = MaterialTheme.colorScheme.error,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(bottom = 12.dp)

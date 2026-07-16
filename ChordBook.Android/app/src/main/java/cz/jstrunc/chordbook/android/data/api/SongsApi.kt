@@ -10,13 +10,18 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-
+/**
+ * song returned in the song list
+ */
 data class SongListItemResponse(
     val id: String,
     val title: String,
     val artist: String?
 )
 
+/**
+ * detailed song returned by the API
+ */
 data class SongDetailResponse(
     val id: String,
     val title: String,
@@ -31,11 +36,17 @@ data class SongLineResponse(
     val chords: List<ChordPositionResponse>
 )
 
+/**
+ * song line returned by the API
+ */
 data class ChordPositionResponse(
     val characterIndex: Int,
     val chord: SongChordResponse
 )
 
+/**
+ * chord position within a song line
+ */
 data class SongChordResponse(
     val id: String,
     val name: String,
@@ -47,16 +58,25 @@ data class CreateSongRequest(
     val artist: String?
 )
 
+/**
+ * chord returned as part of a song
+ */
 data class CreateSongResponse(
     val id: String
 )
 
+/**
+ * request for creating a new song
+ */
 data class UpdateSongRequest(
     val title: String,
     val artist: String?,
     val lines: List<UpdateSongLineRequest>
 )
 
+/**
+ * response returned after creating a song
+ */
 data class UpdateSongLineRequest(
     val lineNumber: Int,
     val text: String,
@@ -64,7 +84,9 @@ data class UpdateSongLineRequest(
 )
 
 
-
+/**
+ * song API endpoints
+ */
 interface SongsApi {
 
     @GET("api/songs")

@@ -16,35 +16,50 @@ import cz.jstrunc.chordbook.android.data.api.getApiErrorMessage
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
+/**
+ * manages the state and API communication for editing a song
+ */
 class SongEditViewModel : ViewModel() {
 
+    /// song currently being edited
     var song by mutableStateOf<SongDetailResponse?>(null)
         private set
 
+    /// available chords
     var chords by mutableStateOf<List<ChordResponse>>(emptyList())
         private set
 
+    /// indicates whether the song is loading
     var isLoading by mutableStateOf(false)
         private set
 
+    /// indicates whether the song is being saved
     var isSaving by mutableStateOf(false)
         private set
 
+    /// indicates whether chords are loading
     var areChordsLoading by mutableStateOf(false)
         private set
 
+    /// indicates whether a chord operation is in progress
     var isChordSaving by mutableStateOf(false)
         private set
 
+    /// error related to loading or saving the song
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
+    /// error related to chord operations
     var chordErrorMessage by mutableStateOf<String?>(null)
         private set
 
+    /// network connection error
     var connectionErrorMessage by mutableStateOf<String?>(null)
         private set
 
+    /**
+     * loads the song that will be edited
+     */
     fun loadSong(songId: String) {
         viewModelScope.launch {
             isLoading = true
@@ -64,10 +79,15 @@ class SongEditViewModel : ViewModel() {
         }
     }
 
+    /**
+     * loads all available chords and sorts them by name
+     */
     fun loadChords() {
         viewModelScope.launch {
             areChordsLoading = true
             chordErrorMessage = null
+            connectionErrorMessage = null
+
 
             try {
                 chords = ApiClient.chordsApi
@@ -81,14 +101,17 @@ class SongEditViewModel : ViewModel() {
                     else -> "Akordy se nepodařilo načíst"
                 }
             } catch (exception: Exception) {
-                errorMessage =
-                    getApiErrorMessage(exception)
+                connectionErrorMessage =
+                getApiErrorMessage(exception)
             } finally {
                 areChordsLoading = false
             }
         }
     }
 
+    /**
+     * validates and creates a new chord
+     */
     fun createChord(
         name: String,
         fingering: String,
@@ -109,6 +132,8 @@ class SongEditViewModel : ViewModel() {
         viewModelScope.launch {
             isChordSaving = true
             chordErrorMessage = null
+            connectionErrorMessage = null
+
 
             try {
                 val createdChord = ApiClient.chordsApi
@@ -136,14 +161,17 @@ class SongEditViewModel : ViewModel() {
                     else -> "Akord se nepodařilo vytvořit"
                 }
             } catch (exception: Exception) {
-                errorMessage =
-                    getApiErrorMessage(exception)
+                connectionErrorMessage =
+                getApiErrorMessage(exception)
             } finally {
                 isChordSaving = false
             }
         }
     }
 
+    /**
+     * deletes the selected chord
+     */
     fun deleteChord(
         chordId: String,
         onSuccess: () -> Unit
@@ -151,6 +179,8 @@ class SongEditViewModel : ViewModel() {
         viewModelScope.launch {
             isChordSaving = true
             chordErrorMessage = null
+            connectionErrorMessage = null
+
 
             try {
                 ApiClient.chordsApi
@@ -171,7 +201,7 @@ class SongEditViewModel : ViewModel() {
                     else -> "Akord se nepodařilo smazat"
                 }
             } catch (exception: Exception) {
-                errorMessage =
+                connectionErrorMessage =
                     getApiErrorMessage(exception)
             } finally {
                 isChordSaving = false
@@ -179,10 +209,16 @@ class SongEditViewModel : ViewModel() {
         }
     }
 
+    /**
+     * clears the current chord error message
+     */
     fun clearChordError() {
         chordErrorMessage = null
     }
 
+    /**
+     * validates and saves the edited song
+     */
     fun saveSong(
         songId: String,
         draft: EditableSongDraft,
@@ -197,6 +233,8 @@ class SongEditViewModel : ViewModel() {
         viewModelScope.launch {
             isSaving = true
             errorMessage = null
+            connectionErrorMessage = null
+
 
             try {
                 val request = UpdateSongRequest(
@@ -234,7 +272,7 @@ class SongEditViewModel : ViewModel() {
                     else -> "Písničku se nepodařilo uložit"
                 }
             } catch (exception: Exception) {
-                errorMessage =
+                connectionErrorMessage =
                     getApiErrorMessage(exception)
             } finally {
                 isSaving = false

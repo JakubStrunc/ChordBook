@@ -1,6 +1,5 @@
 package cz.jstrunc.chordbook.android.screens.login
 
-import android.text.style.BackgroundColorSpan
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,10 +24,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cz.jstrunc.chordbook.android.screens.common.ConnectionErrorScreen
 import cz.jstrunc.chordbook.android.ui.theme.ChordBookAndroidTheme
 import cz.jstrunc.chordbook.android.ui.theme.ChordBookColors
 
 
+/**
+ * displays the login form and handles user authentication
+ */
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
@@ -36,6 +39,19 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit
 )
 {
+
+    loginViewModel.connectionErrorMessage?.let { message ->
+        ConnectionErrorScreen(
+            message = message,
+            onRetry = {
+                loginViewModel.login(
+                    onSuccess = onLoginSuccess
+                )
+            },
+            modifier = modifier
+        )
+        return
+    }
 
     Column(
         modifier = modifier
@@ -138,6 +154,10 @@ fun LoginScreen(
 
 }
 
+
+/**
+ * preview of the login screen
+ */
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {

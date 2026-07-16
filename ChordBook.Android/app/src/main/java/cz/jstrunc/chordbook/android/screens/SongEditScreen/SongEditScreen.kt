@@ -63,26 +63,40 @@ import cz.jstrunc.chordbook.android.data.api.ChordPositionResponse
 import cz.jstrunc.chordbook.android.data.api.ChordResponse
 import cz.jstrunc.chordbook.android.data.api.SongChordResponse
 import cz.jstrunc.chordbook.android.data.api.SongDetailResponse
+import cz.jstrunc.chordbook.android.screens.common.ConnectionErrorScreen
 import cz.jstrunc.chordbook.android.ui.theme.ChordBookColors
 
+
+/**
+ * available tabs in the song editor
+ */
 enum class SongEditTab(val title: String) {
     DETAILS("Údaje"),
     LYRICS("Text"),
     CHORDS("Akordy")
 }
 
+/**
+ * editable representation of a song line
+ */
 data class EditableSongLine(
     val lineNumber: Int,
     val text: String,
     val chords: List<ChordPositionResponse>
 )
 
+/**
+ * editable representation of a song
+ */
 data class EditableSongDraft(
     val title: String,
     val artist: String?,
     val lines: List<EditableSongLine>
 )
 
+/**
+ * displays the screen for editing a song
+ */
 @Composable
 fun EditSongScreen(
     songId: String,
@@ -94,6 +108,18 @@ fun EditSongScreen(
     LaunchedEffect(songId) {
         songEditViewModel.loadSong(songId)
         songEditViewModel.loadChords()
+    }
+
+    songEditViewModel.connectionErrorMessage?.let { message ->
+        ConnectionErrorScreen(
+            message = message,
+            onRetry = {
+                songEditViewModel.loadSong(songId)
+                songEditViewModel.loadChords()
+            },
+            modifier = modifier
+        )
+        return
     }
 
     when {
@@ -162,6 +188,9 @@ fun EditSongScreen(
     }
 }
 
+/**
+ * displays the main content of the song editor
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditSongContent(
@@ -389,6 +418,10 @@ private fun EditSongContent(
     }
 }
 
+
+/**
+ * displays the editor header with navigation and save actions
+ */
 @Composable
 private fun EditSongHeader(
     isSaving: Boolean,
@@ -447,6 +480,9 @@ private fun EditSongHeader(
     HorizontalDivider()
 }
 
+/**
+ * displays the editor tabs
+ */
 @Composable
 private fun EditSongTabs(
     selectedTab: SongEditTab,
@@ -479,6 +515,9 @@ private fun EditSongTabs(
     }
 }
 
+/**
+ * displays editable song details
+ */
 @Composable
 private fun DetailsEditTab(
     title: String,
@@ -524,6 +563,9 @@ private fun DetailsEditTab(
     }
 }
 
+/**
+ * displays the lyrics editor
+ */
 @Composable
 private fun LyricsEditTab(
     lyricsText: String,
@@ -601,6 +643,9 @@ private fun LyricsEditTab(
     }
 }
 
+/**
+ * displays the chord editor
+ */
 @Composable
 private fun ChordsEditTab(
     lines: List<EditableSongLine>,
@@ -654,6 +699,9 @@ private fun ChordsEditTab(
     }
 }
 
+/**
+ * displays a single editable song line with chord positions
+ */
 @Composable
 private fun EditableChordLine(
     line: EditableSongLine,
@@ -721,6 +769,9 @@ private fun EditableChordLine(
     }
 }
 
+/**
+ * displays the chord selection sheet
+ */
 @Composable
 private fun ChordPickerSheet(
     chords: List<ChordResponse>,
@@ -1028,6 +1079,9 @@ private fun ChordPickerSheet(
     }
 }
 
+/**
+ * displays a dialog for creating a new chord
+ */
 @Composable
 private fun CreateChordDialog(
     isSaving: Boolean,
@@ -1133,6 +1187,9 @@ private fun CreateChordDialog(
     )
 }
 
+/**
+ * inserts or replaces a chord at the specified position
+ */
 private fun putChordAtPosition(
     lines: List<EditableSongLine>,
     lineNumber: Int,
@@ -1166,6 +1223,9 @@ private fun putChordAtPosition(
     }
 }
 
+/**
+ * removes a chord from the specified position
+ */
 private fun removeChordAtPosition(
     lines: List<EditableSongLine>,
     lineNumber: Int,
@@ -1184,6 +1244,9 @@ private fun removeChordAtPosition(
     }
 }
 
+/**
+ * creates editable song lines from the lyrics text
+ */
 private fun createLinesFromText(
     text: String,
     previousLines: List<EditableSongLine>
@@ -1205,6 +1268,9 @@ private fun createLinesFromText(
         }
 }
 
+/**
+ * builds the visual chord line displayed above the lyrics
+ */
 private fun buildChordLine(
     textLength: Int,
     chordPositions: List<ChordPositionResponse>

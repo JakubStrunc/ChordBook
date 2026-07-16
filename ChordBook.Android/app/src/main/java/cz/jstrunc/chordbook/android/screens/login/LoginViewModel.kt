@@ -12,33 +12,54 @@ import cz.jstrunc.chordbook.android.data.api.getApiErrorMessage
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
+/**
+ * manages the state and authentication for the login screen
+ */
 class LoginViewModel : ViewModel() {
 
+    /// entered username
     var username by mutableStateOf("")
         private set
 
+    /// entered password
     var password by mutableStateOf("")
         private set
 
+    /// indicates whether login is in progress
     var isLoading by mutableStateOf(false)
         private set
 
+    /// authentication token
     var token by mutableStateOf<String?>(null)
         private set
 
+    /// login error message
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
+    /**
+     * updates the username
+     */
     fun onUsernameChange(value: String) {
         username = value
         errorMessage = null
     }
 
+    /**
+     * updates the password
+     */
     fun onPasswordChange(value: String) {
         password = value
         errorMessage = null
     }
 
+    /// network connection error
+    var connectionErrorMessage by mutableStateOf<String?>(null)
+        private set
+
+    /**
+     * authenticates the user and stores the received JWT token
+     */
     fun login(
         onSuccess: () -> Unit
     ) {
@@ -51,6 +72,8 @@ class LoginViewModel : ViewModel() {
         viewModelScope.launch {
             isLoading = true
             errorMessage = null
+            connectionErrorMessage = null
+
 
             try {
                 val response = ApiClient.authApi.login(
@@ -71,7 +94,6 @@ class LoginViewModel : ViewModel() {
 
                 onSuccess()
             } catch (exception: HttpException) {
-                Log.e("LOGIN", "Login failed", exception)
 
                 errorMessage = when (exception.code()) {
                     400, 401 ->
@@ -81,8 +103,7 @@ class LoginViewModel : ViewModel() {
                         getApiErrorMessage(exception)
                 }
             } catch (exception: Exception) {
-                Log.e("LOGIN", "Login failed", exception)
-                errorMessage =
+                connectionErrorMessage =
                     getApiErrorMessage(exception)
             } finally {
                 isLoading = false

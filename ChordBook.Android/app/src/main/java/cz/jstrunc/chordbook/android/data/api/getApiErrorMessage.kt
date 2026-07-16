@@ -6,6 +6,9 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import javax.net.ssl.SSLException
 
+/**
+ * returns a user-friendly error message for API and network-related exceptions
+ */
 fun getApiErrorMessage(
     exception: Exception
 ): String {

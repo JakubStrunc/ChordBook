@@ -16,6 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * displays a full-screen connection error
+ */
 @Composable
 fun ConnectionErrorScreen(
     message: String,

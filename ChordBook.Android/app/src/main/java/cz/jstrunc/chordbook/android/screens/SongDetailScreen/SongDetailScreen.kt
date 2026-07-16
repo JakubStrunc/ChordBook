@@ -52,8 +52,13 @@ import cz.jstrunc.chordbook.android.data.api.CategoryResponse
 import cz.jstrunc.chordbook.android.data.api.ChordPositionResponse
 import cz.jstrunc.chordbook.android.data.api.SongDetailResponse
 import cz.jstrunc.chordbook.android.data.api.SongLineResponse
+import cz.jstrunc.chordbook.android.screens.common.ConnectionErrorScreen
 import cz.jstrunc.chordbook.android.ui.theme.ChordBookColors
 
+
+/**
+ * displays the detail of a selected song
+ */
 @Composable
 fun SongDetailScreen(
     songId: String,
@@ -65,6 +70,17 @@ fun SongDetailScreen(
     LaunchedEffect(songId) {
         songDetailViewModel.loadSong(songId)
         songDetailViewModel.loadCategories()
+    }
+
+    songDetailViewModel.connectionErrorMessage?.let { message ->
+        ConnectionErrorScreen(
+            message = message,
+            onRetry = {
+                songDetailViewModel.loadSong(songId)
+                songDetailViewModel.loadCategories()
+            }
+        )
+        return
     }
 
     when {
@@ -148,8 +164,13 @@ fun SongDetailScreen(
             )
         }
     }
+
 }
 
+
+/**
+ * displays the main content of the song detail screen
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SongDetailContent(
@@ -442,6 +463,9 @@ private fun SongDetailContent(
     }
 }
 
+/**
+ * displays a dialog for assigning or creating a category
+ */
 @Composable
 private fun AddCategoryDialog(
     songCategoryNames: List<String>,
@@ -626,6 +650,9 @@ private fun AddCategoryDialog(
     )
 }
 
+/**
+ * displays an error message
+ */
 @Composable
 private fun ErrorText(
     message: String
@@ -638,6 +665,9 @@ private fun ErrorText(
     )
 }
 
+/**
+ * displays a chord as a rounded label
+ */
 @Composable
 private fun ChordPill(
     name: String
@@ -662,6 +692,9 @@ private fun ChordPill(
     }
 }
 
+/**
+ * displays an assigned category with a remove action
+ */
 @Composable
 private fun CategoryPill(
     name: String,
@@ -702,6 +735,9 @@ private fun CategoryPill(
     }
 }
 
+/**
+ * displays the button for adding a category
+ */
 @Composable
 private fun AddCategoryPill(
     enabled: Boolean,
@@ -733,6 +769,9 @@ private fun AddCategoryPill(
     }
 }
 
+/**
+ * displays one lyrics line with its chords
+ */
 @Composable
 private fun SongLyricsLine(
     line: SongLineResponse
@@ -763,6 +802,9 @@ private fun SongLyricsLine(
     }
 }
 
+/**
+ * builds the visual chord line displayed above the lyrics
+ */
 private fun buildChordLine(
     textLength: Int,
     chordPositions: List<ChordPositionResponse>

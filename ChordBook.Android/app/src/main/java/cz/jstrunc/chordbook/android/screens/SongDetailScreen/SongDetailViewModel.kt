@@ -12,35 +12,50 @@ import cz.jstrunc.chordbook.android.data.api.SongDetailResponse
 import cz.jstrunc.chordbook.android.data.api.getApiErrorMessage
 import kotlinx.coroutines.launch
 
+/**
+ * manages the state and API communication for the song detail screen
+ */
 class SongDetailViewModel : ViewModel() {
 
+    /// currently displayed song
     var song by mutableStateOf<SongDetailResponse?>(null)
         private set
 
+    /// indicates whether the song is loading
     var isLoading by mutableStateOf(false)
         private set
 
+    /// indicates whether the song is being deleted
     var isDeleting by mutableStateOf(false)
         private set
 
+    /// error related to song operations
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
+    /// categories available for assignment
     var availableCategories by mutableStateOf<List<CategoryResponse>>(emptyList())
         private set
 
+    /// indicates whether categories are loading
     var isCategoriesLoading by mutableStateOf(false)
         private set
 
+    /// error related to category operations
     var categoriesErrorMessage by mutableStateOf<String?>(null)
         private set
 
+    /// indicates whether a category operation is in progress
     var isCategoryUpdating by mutableStateOf(false)
         private set
 
+    /// network connection error
     var connectionErrorMessage by mutableStateOf<String?>(null)
         private set
 
+    /**
+     * loads the selected song
+     */
     fun loadSong(songId: String) {
         viewModelScope.launch {
             isLoading = true
@@ -60,16 +75,21 @@ class SongDetailViewModel : ViewModel() {
         }
     }
 
+    /**
+     * loads all available categories
+     */
     fun loadCategories() {
         viewModelScope.launch {
             isCategoriesLoading = true
             categoriesErrorMessage = null
+            connectionErrorMessage = null
+
 
             try {
                 availableCategories =
                     ApiClient.categoriesApi.getCategoriesRequest()
             } catch (exception: Exception) {
-                categoriesErrorMessage =
+                connectionErrorMessage =
                     getApiErrorMessage(exception)
             } finally {
                 isCategoriesLoading = false
@@ -77,6 +97,9 @@ class SongDetailViewModel : ViewModel() {
         }
     }
 
+    /**
+     * assigns an existing category to the song
+     */
     fun addCategory(
         songId: String,
         categoryId: String,
@@ -85,6 +108,8 @@ class SongDetailViewModel : ViewModel() {
         viewModelScope.launch {
             isCategoryUpdating = true
             categoriesErrorMessage = null
+            connectionErrorMessage = null
+
 
             try {
                 val response =
@@ -115,7 +140,7 @@ class SongDetailViewModel : ViewModel() {
                     }
                 }
             } catch (exception: Exception) {
-                categoriesErrorMessage =
+                connectionErrorMessage =
                     getApiErrorMessage(exception)
             } finally {
                 isCategoryUpdating = false
@@ -123,6 +148,9 @@ class SongDetailViewModel : ViewModel() {
         }
     }
 
+    /**
+     * removes a category from the song
+     */
     fun deleteCategory(
         songId: String,
         categoryId: String
@@ -130,6 +158,8 @@ class SongDetailViewModel : ViewModel() {
         viewModelScope.launch {
             isCategoryUpdating = true
             categoriesErrorMessage = null
+            connectionErrorMessage = null
+
 
             try {
                 val response =
@@ -154,7 +184,7 @@ class SongDetailViewModel : ViewModel() {
                     }
                 }
             } catch (exception: Exception) {
-                categoriesErrorMessage =
+                connectionErrorMessage =
                     getApiErrorMessage(exception)
             } finally {
                 isCategoryUpdating = false
@@ -162,6 +192,9 @@ class SongDetailViewModel : ViewModel() {
         }
     }
 
+    /**
+     * creates a new category and assigns it to the song
+     */
     fun createCategory(
         songId: String,
         categoryName: String,
@@ -170,6 +203,8 @@ class SongDetailViewModel : ViewModel() {
         viewModelScope.launch {
             isCategoryUpdating = true
             categoriesErrorMessage = null
+            connectionErrorMessage = null
+
 
             try {
                 val trimmedName = categoryName.trim()
@@ -216,7 +251,7 @@ class SongDetailViewModel : ViewModel() {
                     }
                 }
             } catch (exception: Exception) {
-                categoriesErrorMessage =
+                connectionErrorMessage =
                     getApiErrorMessage(exception)
             } finally {
                 isCategoryUpdating = false
@@ -224,6 +259,9 @@ class SongDetailViewModel : ViewModel() {
         }
     }
 
+    /**
+     * deletes the selected song
+     */
     fun deleteSong(
         songId: String,
         onSuccess: () -> Unit
@@ -231,6 +269,8 @@ class SongDetailViewModel : ViewModel() {
         viewModelScope.launch {
             isDeleting = true
             errorMessage = null
+            connectionErrorMessage = null
+
 
             try {
                 val response =
@@ -253,7 +293,7 @@ class SongDetailViewModel : ViewModel() {
                     }
                 }
             } catch (exception: Exception) {
-                categoriesErrorMessage =
+                connectionErrorMessage =
                     getApiErrorMessage(exception)
             } finally {
                 isDeleting = false

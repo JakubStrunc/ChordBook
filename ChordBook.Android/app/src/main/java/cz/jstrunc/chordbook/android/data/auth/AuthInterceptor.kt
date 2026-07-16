@@ -4,10 +4,16 @@ import TokenStorage
 import okhttp3.Interceptor
 import okhttp3.Response
 
+/**
+ * adds the JWT authentication token to every outgoing API request
+ */
 class AuthInterceptor(
     private val tokenStorage: TokenStorage
 ) : Interceptor {
 
+    /**
+     * adds the Authorization header when a token is available
+     */
     override fun intercept(chain: Interceptor.Chain): Response {
         val token = tokenStorage.getToken()
 

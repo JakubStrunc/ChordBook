@@ -12,24 +12,48 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
+/**
+ * manages the state and API communication for creating a new song
+ */
 class CreateSongViewModel : ViewModel() {
 
+    /// song title
     var title by mutableStateOf("")
+        private set
 
+    /// song artist
     var artist by mutableStateOf("")
+        private set
 
+    /// indicates whether the song is being created
     var isLoading by mutableStateOf(false)
+        private set
 
+    /// error message displayed on the screen
     var errorMessage by mutableStateOf<String?>(null)
+        private set
 
+    /// network connection error
+    var connectionErrorMessage by mutableStateOf<String?>(null)
+        private set
+
+    /**
+     * updates the song title
+     */
     fun onTitleChange(value: String) {
         title = value
     }
 
+    /**
+     * updates the song artist
+     */
     fun onArtistChange(value: String) {
         artist = value
     }
 
+    /**
+     * validates the input and creates a new song
+     */
     fun createSong(
         onSuccess: (String) -> Unit
     ) {
@@ -44,6 +68,7 @@ class CreateSongViewModel : ViewModel() {
         viewModelScope.launch {
             isLoading = true
             errorMessage = null
+            connectionErrorMessage = null
 
             try {
                 val response = ApiClient.songsApi.createSongRequest(
@@ -63,7 +88,7 @@ class CreateSongViewModel : ViewModel() {
                     else -> getApiErrorMessage(exception)
                 }
             } catch (exception: Exception) {
-                errorMessage =
+                connectionErrorMessage =
                     getApiErrorMessage(exception)
             } finally {
                 isLoading = false

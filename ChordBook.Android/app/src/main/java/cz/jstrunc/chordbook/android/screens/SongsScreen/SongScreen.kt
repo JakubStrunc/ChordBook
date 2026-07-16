@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,9 +54,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cz.jstrunc.chordbook.android.data.api.CategoryResponse
 import cz.jstrunc.chordbook.android.data.api.SongListItemResponse
 import cz.jstrunc.chordbook.android.screens.SongsScreen.SongsViewModel
+import cz.jstrunc.chordbook.android.screens.common.ConnectionErrorScreen
 import cz.jstrunc.chordbook.android.ui.theme.ChordBookAndroidTheme
 import cz.jstrunc.chordbook.android.ui.theme.ChordBookColors
 
+
+/**
+ * displays the list of songs with search and category filters
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongsScreen(
@@ -68,6 +74,15 @@ fun SongsScreen(
 
     LaunchedEffect(refreshKey) {
         songsViewModel.loadSongs()
+    }
+
+    songsViewModel.connectionErrorMessage?.let { message ->
+        ConnectionErrorScreen(
+            message = message,
+            onRetry = songsViewModel::retryLoading,
+            modifier = modifier
+        )
+        return
     }
 
     Scaffold(
@@ -256,6 +271,10 @@ fun SongsScreen(
     }
 }
 
+
+/**
+ * displays a single song in the songs list
+ */
 @Composable
 private fun SongCard(
     song: SongListItemResponse,
@@ -336,6 +355,10 @@ private fun SongCard(
     )
 }
 
+
+/**
+ * displays a message when no songs are available
+ */
 @Composable
 private fun EmptySongsMessage() {
     Column(
@@ -359,6 +382,9 @@ private fun EmptySongsMessage() {
     }
 }
 
+/**
+ * displays the category filter panel
+ */
 @Composable
 private fun CategoriesFilterPanel(
     categories: List<CategoryResponse>,
@@ -371,10 +397,6 @@ private fun CategoriesFilterPanel(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 4.dp, bottom = 8.dp)
-            .background(
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(8.dp)
-            )
             .padding(
                 horizontal = 12.dp,
                 vertical = 8.dp
@@ -420,39 +442,32 @@ private fun CategoriesFilterPanel(
             }
 
             else -> {
-                LazyColumn(
+                val sortedCategories = categories.sortedWith(
+                    compareByDescending<CategoryResponse> { category ->
+                        category.id in selectedCategoryIds
+                    }.thenBy { category ->
+                        category.name.lowercase()
+                    }
+                )
+
+                FlowRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 180.dp)
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(
-                        items = categories,
-                        key = { category -> category.id }
-                    ) { category ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onCategoryClick(category.id)
-                                }
-                                .padding(vertical = 2.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = category.id in selectedCategoryIds,
-                                onCheckedChange = {
-                                    onCategoryClick(category.id)
-                                }
-                            )
+                    sortedCategories.forEach { category ->
+                        val isSelected =
+                            category.id in selectedCategoryIds
 
-                            Text(
-                                text = category.name,
-                                fontSize = 14.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(start = 4.dp)
-                            )
-                        }
+                        CategoryFilterPill(
+                            name = category.name,
+                            isSelected = isSelected,
+                            onClick = {
+                                onCategoryClick(category.id)
+                            }
+                        )
                     }
                 }
             }
@@ -460,33 +475,52 @@ private fun CategoriesFilterPanel(
     }
 }
 
+/**
+ * displays a selectable category filter pill
+ */
 @Composable
-private fun SortOptionRow(
-    text: String,
-    selected: Boolean,
+private fun CategoryFilterPill(
+    name: String,
+    isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    Row(
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .background(
+                color = if (isSelected) {
+                    ChordBookColors.Primary.copy(alpha = 0.16f)
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant
+                },
+                shape = RoundedCornerShape(50)
+            )
             .clickable(onClick = onClick)
-            .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(
+                horizontal = 14.dp,
+                vertical = 8.dp
+            )
     ) {
-        RadioButton(
-            selected = selected,
-            onClick = onClick
-        )
-
         Text(
-            text = text,
-            modifier = Modifier.padding(start = 8.dp)
+            text = name,
+            color = if (isSelected) {
+                ChordBookColors.Primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            fontSize = 14.sp,
+            fontWeight = if (isSelected) {
+                FontWeight.SemiBold
+            } else {
+                FontWeight.Normal
+            }
         )
     }
 }
 
 
-
+/**
+ * preview of the songs screen
+ */
 @Preview(showBackground = true)
 @Composable
 private fun SongsScreenPreview() {
