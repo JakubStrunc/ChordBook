@@ -6,10 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import cz.jstrunc.chordbook.android.data.api.ApiClient
 import cz.jstrunc.chordbook.android.data.api.LoginRequest
+import cz.jstrunc.chordbook.android.data.api.getApiErrorMessage
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class LoginViewModel : ViewModel() {
 
@@ -69,9 +70,20 @@ class LoginViewModel : ViewModel() {
                 token = receivedToken
 
                 onSuccess()
+            } catch (exception: HttpException) {
+                Log.e("LOGIN", "Login failed", exception)
+
+                errorMessage = when (exception.code()) {
+                    400, 401 ->
+                        "Nesprávné uživatelské jméno nebo heslo."
+
+                    else ->
+                        getApiErrorMessage(exception)
+                }
             } catch (exception: Exception) {
                 Log.e("LOGIN", "Login failed", exception)
-                errorMessage = "Přihlášení se nezdařilo."
+                errorMessage =
+                    getApiErrorMessage(exception)
             } finally {
                 isLoading = false
             }

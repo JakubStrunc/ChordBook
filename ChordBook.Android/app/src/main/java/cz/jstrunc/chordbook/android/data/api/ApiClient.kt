@@ -19,6 +19,12 @@ object ApiClient {
     lateinit var categoriesApi: CategoriesApi
         private set
 
+    lateinit var chordsApi: ChordsApi
+        private set
+
+    lateinit var songsApi: SongsApi
+        private set
+
     fun initialize(context: Context) {
         tokenStorage = TokenStorage(context.applicationContext)
 
@@ -36,6 +42,8 @@ object ApiClient {
 
         authApi = retrofit.create(AuthApi::class.java)
         categoriesApi = retrofit.create(CategoriesApi::class.java)
+        songsApi = retrofit.create(SongsApi::class.java)
+        chordsApi = retrofit.create(ChordsApi::class.java)
     }
 
     fun saveToken(token: String) {
