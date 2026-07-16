@@ -18,8 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object ApiClient {
 
     /// base URL of the backend API
-    private const val BASE_URL = "https://chordbook-jstrunc-api-g9cg9ybegxhvdvbu.germanywestcentral-01.azurewebsites.net/"
-
+    private const val BASE_URL = "https://chordbook-jstrunc-api-ggc9cybegxhvdvbu.germanywestcentral-01.azurewebsites.net/"
     /// stores the JWT token on the device
     private lateinit var tokenStorage: TokenStorage
 
