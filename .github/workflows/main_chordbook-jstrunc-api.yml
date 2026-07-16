@@ -1,0 +1,78 @@
+name: Deploy ChordBook API to Azure
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  API_PROJECT: ChordBook.Api/ChordBook.Api.csproj
+  PUBLISH_DIR: ${{ github.workspace }}/publish
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.x
+
+      - name: Restore API
+        run: dotnet restore "${{ env.API_PROJECT }}"
+
+      - name: Build API
+        run: |
+          dotnet build "${{ env.API_PROJECT }}" \
+            --configuration Release \
+            --no-restore
+
+      - name: Publish API
+        run: |
+          dotnet publish "${{ env.API_PROJECT }}" \
+            --configuration Release \
+            --no-build \
+            --output "${{ env.PUBLISH_DIR }}"
+
+      - name: Upload deployment artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chordbook-api
+          path: ${{ env.PUBLISH_DIR }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download deployment artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: chordbook-api
+          path: ./publish
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_30BFA2D200334E22AC86FFF3FE3CE65E }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_336294E0B80E4564AF7B475A12BE7298 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F53435046F544589A79DEB6EDB1DF3F4 }}
+
+      - name: Deploy API to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: chordbook-jstrunc-api
+          slot-name: Production
+          package: ./publish
