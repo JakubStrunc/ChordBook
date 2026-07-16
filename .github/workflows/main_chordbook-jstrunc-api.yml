@@ -8,7 +8,9 @@ on:
 
 env:
   API_PROJECT: ChordBook.Api/ChordBook.Api.csproj
+  MIGRATIONS_PROJECT: ChordBook.Api/ChordBook.Api.csproj
   PUBLISH_DIR: ${{ github.workspace }}/publish
+  MIGRATION_BUNDLE: ${{ github.workspace }}/efbundle
 
 jobs:
   build:
@@ -42,11 +44,26 @@ jobs:
             --no-build \
             --output "${{ env.PUBLISH_DIR }}"
 
+      - name: Install EF Core tool
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Create migration bundle
+        run: |
+          dotnet ef migrations bundle \
+            --project "${{ env.MIGRATIONS_PROJECT }}" \
+            --startup-project "${{ env.API_PROJECT }}" \
+            --configuration Release \
+            --self-contained \
+            --target-runtime linux-x64 \
+            --output "${{ env.MIGRATION_BUNDLE }}"
+
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
         with:
-          name: chordbook-api
-          path: ${{ env.PUBLISH_DIR }}
+          name: chordbook-deployment
+          path: |
+            ${{ env.PUBLISH_DIR }}
+            ${{ env.MIGRATION_BUNDLE }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -60,8 +77,8 @@ jobs:
       - name: Download deployment artifact
         uses: actions/download-artifact@v4
         with:
-          name: chordbook-api
-          path: ./publish
+          name: chordbook-deployment
+          path: ./deployment
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -70,9 +87,37 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_336294E0B80E4564AF7B475A12BE7298 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F53435046F544589A79DEB6EDB1DF3F4 }}
 
+      - name: Get GitHub runner IP
+        id: runner-ip
+        run: |
+          echo "ip=$(curl --silent https://api.ipify.org)" >> "$GITHUB_OUTPUT"
+
+      - name: Allow GitHub runner through SQL firewall
+        run: |
+          az sql server firewall-rule create \
+            --resource-group chordbook-rg \
+            --server chordbook-jstrunc \
+            --name "GitHubActions-${{ github.run_id }}" \
+            --start-ip-address "${{ steps.runner-ip.outputs.ip }}" \
+            --end-ip-address "${{ steps.runner-ip.outputs.ip }}"
+
+      - name: Run database migrations
+        run: |
+          chmod +x ./deployment/efbundle
+          ./deployment/efbundle \
+            --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+
+      - name: Remove GitHub runner from SQL firewall
+        if: always()
+        run: |
+          az sql server firewall-rule delete \
+            --resource-group chordbook-rg \
+            --server chordbook-jstrunc \
+            --name "GitHubActions-${{ github.run_id }}"
+
       - name: Deploy API to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: chordbook-jstrunc-api
           slot-name: Production
-          package: ./publish
+          package: ./deployment/publish
