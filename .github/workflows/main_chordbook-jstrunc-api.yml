@@ -48,21 +48,21 @@ jobs:
         run: dotnet tool install --global dotnet-ef
 
       - name: Create migration bundle
-          env:
-            ConnectionStrings__ChordBook: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
-            Jwt__Key: "ChordBook-migration-key-that-is-at-least-32-characters"
-            Jwt__Issuer: "ChordBook"
-            Jwt__Audience: "ChordBookClient"
-            Auth__Username: "migration"
-            Auth__Password: "migration-password"
-          run: |
-            dotnet ef migrations bundle \
-              --project "${{ env.MIGRATIONS_PROJECT }}" \
-              --startup-project "${{ env.API_PROJECT }}" \
-              --configuration Release \
-              --self-contained \
-              --target-runtime linux-x64 \
-              --output "${{ env.MIGRATION_BUNDLE }}"
+        env:
+          ConnectionStrings__ChordBook: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+          Jwt__Key: "ChordBook-migration-key-that-is-at-least-32-characters"
+          Jwt__Issuer: "ChordBook"
+          Jwt__Audience: "ChordBookClient"
+          Auth__Username: "migration"
+          Auth__Password: "migration-password"
+        run: |
+          dotnet ef migrations bundle \
+            --project "${{ env.MIGRATIONS_PROJECT }}" \
+            --startup-project "${{ env.API_PROJECT }}" \
+            --configuration Release \
+            --self-contained \
+            --target-runtime linux-x64 \
+            --output "${{ env.MIGRATION_BUNDLE }}"
 
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
